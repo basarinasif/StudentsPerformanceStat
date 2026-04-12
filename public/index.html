@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <h1 class="head-title">Students Performance in Bangladesh Dashboard</h1>
+  <div class="card-container">
+    <div class="cards">
+      <div class="card">Total Students: <span id="total"></span></div>
+      <div class="card">Average GPA: <span id="avg"></span></div>
+      <div class="card">Max GPA: <span id="max"></span></div>
+    </div>
+    <canvas id="chart1"></canvas>
+  </div>
+
+  <div class="bottom-dashboard">
+
+    <div class="grid-stats">
+
+      <div class="stat-box">
+        Total Students
+        <h2 id="totalStudents"></h2>
+      </div>
+
+      <div class="stat-box">
+        Average Attendance
+        <h2 id="avgAttendance"></h2>
+      </div>
+
+      <div class="stat-box">
+        Average Study Hours
+        <h2 id="avgStudyHours"></h2>
+      </div>
+
+      <div class="stat-box">
+        Average GPA (HSC)
+        <h2 id="avgHSC"></h2>
+      </div>
+
+      <div class="stat-box">
+        High Performers (GPA ≥ 4)
+        <h2 id="highPerformers"></h2>
+      </div>
+
+      <div class="stat-box">
+        Private School %
+        <h2 id="privatePercent"></h2>
+      </div>
+
+      <div class="stat-box">
+        Internet Access %
+        <h2 id="internetPercent"></h2>
+      </div>
+
+      <div class="stat-box">
+        Avg Family Income
+        <h2 id="avgIncome"></h2>
+      </div>
+      
+    </div>
+  </div>
+ 
+
+
+<div class="table-container">
+   <h2 class="section-title">Students Record</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Student ID</th>
+        <th>Gender</th>
+        <th>Age</th>
+        <th>District</th>
+        <th>School Type</th>
+        <th>Family Income</th>
+        <th>GPA Result</th>
+      </tr>
+    </thead>
+    <tbody id="student-table-body">
+    </tbody>
+  </table>
+  <div class="pagination">
+    <button id="prevBtn">Prev</button>
+      <div id="pageInfo"></div>
+    <button id="nextBtn">Next</button>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="app.js"></script>
+</body>
+</html>
