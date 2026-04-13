@@ -9,17 +9,28 @@
 <body>
   <div class="header">
     <h1 class="head-title">Students Performance in Bangladesh Dashboard</h1>
-    <button id="darkToggle">
-      <i class="fas fa-moon"></i>
-    </button>
+    <div class="header-toggle">
+      <button id="darkToggle">
+        <i class="fas fa-moon"></i>
+      </button>
+      <select id="chartSelector">
+        <option value="gpa">GPA Chart</option>
+        <option value="attendance">Attendance Chart</option>
+        <option value="study">Study Hours Chart</option>
+      </select>
+    </div>
+     
   </div>
   <div class="card-container">
     <div class="cards">
-      <div class="card">Total Students: <span id="total"></span></div>
-      <div class="card">Average GPA: <span id="avg"></span></div>
-      <div class="card">Max GPA: <span id="max"></span></div>
+      <div class="card label1">Total Students: <span id="total"></span></div>
+      <div class="card label2">Average GPA: <span id="avg"></span></div>
+      <div class="card label3">Max GPA: <span id="max"></span></div>
     </div>
-    <canvas id="chart1"></canvas>
+    
+    <canvas id="chart1" ></canvas>
+    <canvas id="chart2" ></canvas>
+    <canvas id="chart3" ></canvas>
   </div>
 
   <div class="bottom-dashboard">
@@ -70,17 +81,38 @@
   </div>
  
   <div class="table-container">
-    <h2 class="section-title">Students Record</h2>
+    <div class="table-header">
+      <h2 class="section-title">Students Record</h2>
+      <div class="filter-row">
+        <input 
+          type="text" 
+          id="searchInput" 
+          placeholder="Search Student ID, District..."
+        />
+
+        <select id="genderFilter">
+          <option value="">All Gender</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+        </select>
+
+        <select id="schoolFilter">
+          <option value="">All School Type</option>
+          <option value="Private">Private</option>
+          <option value="Public">Public</option>
+        </select>
+      </div>
+    </div>
     <table>
       <thead>
         <tr>
-          <th>Student ID</th>
-          <th>Gender</th>
-          <th>Age</th>
-          <th>District</th>
-          <th>School Type</th>
-          <th>Family Income</th>
-          <th>GPA Result</th>
+          <th onclick="sortTable('Student_ID')" data-key="Student_ID">Student ID</th>
+          <th onclick="sortTable('Gender')" data-key="Gender">Gender</th>
+          <th onclick="sortTable('Age')" data-key="Age">Age</th>
+          <th onclick="sortTable('District')" data-key="District">District</th>
+          <th onclick="sortTable('School_Type')" data-key="School_Type">School Type</th>
+          <th onclick="sortTable('Family_Income_BDT')" data-key="Family_Income_BDT">Family Income</th>
+          <th onclick="sortTable('HSC_Result')" data-key="HSC_Result">GPA Result</th>
         </tr>
       </thead>
       <tbody id="student-table-body">

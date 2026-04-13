@@ -14,11 +14,18 @@ body {
   margin-bottom: 10px;
 }
 
-#chart1{
-  padding: 5px;
+#chart1, #chart2, #chart3 {
+  padding: 10px;
   margin-top: 10px;
+  display: none;
+  
 }
 
+.header-toggle{
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
 
 #darkToggle {
   display: flex;
@@ -32,9 +39,15 @@ body {
 }
 
 #darkToggle:hover {
-  /* gray */
   background: #000; ;
   color: white;
+  cursor: pointer;
+}
+
+#chartSelector {
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
   cursor: pointer;
 }
 
@@ -60,9 +73,41 @@ body {
   font-weight: bold;
 }
 
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 .section-title {
-  margin-bottom: 20px;
-  
+  margin: 0;
+}
+
+.filter-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.filter-row input,
+.filter-row select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: white;
+  color: #000;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  outline: none;
+  transition: 0.2s;
+}
+
+.filter-row input:focus,
+.filter-row select:focus {
+  border-color: #2d7ef7;
+  box-shadow: 0 0 8px rgba(45, 126, 247, 0.4);
 }
 
 .table-container {
@@ -72,6 +117,7 @@ body {
   border-radius: 10px;
   overflow-x: auto;
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  
 }
 
 table {
@@ -229,6 +275,29 @@ body.dark #darkToggle {
   background: #444;
 }
 
+body.dark .filter-row input,
+body.dark .filter-row select {
+  background: #000;
+  color: #00ff88;
+  border: 1px solid #00ff88;
+  box-shadow: 0 0 6px #00ff88;
+}
+
+body.dark .filter-row input::placeholder {
+  color: #00ff88aa;
+}
+
+body.dark .filter-row input:focus,
+body.dark .filter-row select:focus {
+  box-shadow: 0 0 12px #00ff88;
+  border-color: #00ff88;
+}
+
+.filter-row input:hover,
+.filter-row select:hover {
+  transform: translateY(-1px);
+}
+
 /* Stat numbers glow */
 body.dark .stat-box h2 {
   color: #00ff88;
@@ -252,4 +321,30 @@ body.dark #darkToggle {
 body.dark #darkToggle:hover {
   background: #00ff88;
   color: black;
+}
+
+body.dark #chartSelector {
+  background: black;
+  color: #00ff88;
+  border: 1px solid #00ff88;
+}
+
+
+
+@media (max-width: 768px) {
+  .table-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .filter-row {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .filter-row input,
+  .filter-row select {
+    flex: 1;
+    min-width: 140px;
+  }
 }

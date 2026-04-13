@@ -7,7 +7,7 @@ import { fileURLToPath } from "url";
 
 dotenv.config();
 
-// Fix __dirname in ES modules
+// Get __dirname in ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -42,6 +42,12 @@ app.get("/api/students", async (req, res) => {
   res.json(data);
 });
 
+// Uncomment the this lines to run the server locally. 
+// For deployment, use the default export and let the hosting 
+// platform handle it.
+// app.listen(process.env.PORT || 3000, () => {
+//   console.log("Server running on port " + (process.env.PORT || 3000));
+// });
 
 export default app;
 
