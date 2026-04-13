@@ -4,11 +4,38 @@ body {
   background: #F5F5F5;
 }
 
-h1.head-title {
-  margin-bottom: 10px;
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-  padding: 15px;
+  padding: 0 15px;
+  margin-bottom: 10px;
+}
+
+#chart1{
+  padding: 5px;
+  margin-top: 10px;
+}
+
+
+#darkToggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
+  font-size: 18px;
+  border: none;
+  border-radius: 50%;
+}
+
+#darkToggle:hover {
+  /* gray */
+  background: #000; ;
+  color: white;
+  cursor: pointer;
 }
 
 .card-container{
@@ -128,5 +155,101 @@ tr:hover {
 
 .stat-box h2 {
   margin-top: 10px;
-  color: #2d7ef7;
+  /* dark text glow up */
+  color:#000;
+  text-shadow: 0 0 1px #000;
+}
+
+/* =========================
+   DARK MODE
+========================= */
+
+body.dark {
+  background: #000;
+  color: #00ff88;
+}
+
+body.dark * {
+  transition: all 0.2s ease;
+}
+
+body.dark .stat-box:hover {
+  box-shadow: 0 0 20px #00ff88;
+}
+
+body.dark .card-container,
+body.dark .table-container,
+body.dark .stat-box,
+body.dark .card {
+  background: #050505;
+   border: 1px solid #00ff88;
+  box-shadow: 0 0 10px #00ff88;
+  color: #00ff88;
+}
+
+/* Table */
+body.dark table {
+  background: #000;
+}
+
+body.dark th {
+  background: #001a0f;
+  color: #00ff88;
+}
+
+body.dark td {
+  border-color: #003322;
+}
+
+body.dark tr:hover {
+  background: #001a0f;
+}
+
+/* Buttons */
+body.dark button {
+  background: transparent;
+  border: 1px solid #00ff88;
+  color: #00ff88;
+  box-shadow: 0 0 5px #00ff88;
+}
+
+body.dark button:hover {
+  background: #00ff88;
+  color: #000;
+}
+
+body.dark .header {
+  background: #000;
+  border: 1px solid #00ff88;
+  box-shadow: 0 0 8px #00ff88;
+  color: #00ff88;
+}
+
+body.dark #darkToggle {
+  background: #444;
+}
+
+/* Stat numbers glow */
+body.dark .stat-box h2 {
+  color: #00ff88;
+  text-shadow: 0 0 8px #00ff88;
+}
+
+/* Chart canvas background */
+body.dark canvas {
+  background: #000;
+  border: 1px solid #00ff88;
+  box-shadow: 0 0 10px #00ff88;
+}
+
+/* Toggle button */
+body.dark #darkToggle {
+  border: 1px solid #00ff88;
+  background: black;
+  color: #00ff88;
+}
+
+body.dark #darkToggle:hover {
+  background: #00ff88;
+  color: black;
 }

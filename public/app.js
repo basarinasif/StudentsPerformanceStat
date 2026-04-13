@@ -1,13 +1,15 @@
 let students = [];
 let currentPage = 1;
+let chart;
 const rowsPerPage = 10;
+const toggleBtn = document.getElementById("darkToggle");
 
 async function loadData() {
   const res = await fetch("/api/students");
   students = await res.json();
 
   // =========================
-  // TOP KPIs (existing)
+  // DASHBOARD
   // =========================
   document.getElementById("total").innerText = students.length;
 
@@ -21,23 +23,11 @@ async function loadData() {
   // =========================
   // CHART
   // =========================
-  const ctx = document.getElementById("chart1");
-
-  new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels: students.map(s => s.Student_ID),
-      datasets: [{
-        label: "HSC Result",
-        data: gpas
-      }]
-    }
-  });
+  renderChart();
 
   // =========================
-  // 🔽 NEW: BOTTOM DASHBOARD KPIs
+  // METRICS
   // =========================
-
   // Total Students
   document.getElementById("totalStudents").innerText = students.length;
 
@@ -78,16 +68,49 @@ async function loadData() {
     students.reduce((a, b) => a + b.Family_Income_BDT, 0) / students.length
   ).toFixed(0);
   const conversionRate = 0.48;
-
   const avgIncomePHP = (avgIncome * conversionRate).toFixed(2);
-
   document.getElementById("avgIncome").innerText = "৳" + avgIncome + " (₱" + avgIncomePHP + ")";
-  // =========================
  
-
-
   renderTable();
   setupPagination();
+}
+
+function renderChart() {
+  const ctx = document.getElementById("chart1");
+  const isDark = document.body.classList.contains("dark");
+
+  // Destroy old chart before creating new one
+  if (chart) {
+    chart.destroy();
+  }
+
+  chart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: students.map(s => s.Student_ID),
+      datasets: [{
+        label: "HSC Result",
+        data: students.map(s => s.HSC_Result)
+      }]
+    },
+    options: {
+      scales: {
+        x: {
+          ticks: { color: isDark ? "#00ff88" : "#000" },
+          grid: { display: isDark }
+        },
+        y: {
+          ticks: { color: isDark ? "#00ff88" : "#000" },
+          grid: { display: isDark }
+        }
+      },
+      plugins: {
+        legend: {
+          labels: { color: isDark ? "#00ff88" : "#000" }
+        }
+      }
+    }
+  });
 }
 
 function renderTable() {
@@ -129,5 +152,21 @@ function setupPagination() {
     }
   });
 }
+
+if (localStorage.getItem("darkMode") === "enabled") {
+  document.body.classList.add("dark");
+}
+
+toggleBtn.addEventListener("click", () => {
+  document.body.classList.toggle("dark");
+
+  if (document.body.classList.contains("dark")) {
+    localStorage.setItem("darkMode", "enabled");
+  } else {
+    localStorage.setItem("darkMode", "disabled");
+  }
+
+  renderChart(); 
+});
 
 loadData();

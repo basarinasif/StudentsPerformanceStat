@@ -3,11 +3,16 @@
 <head>
   <title>Student Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-  <h1 class="head-title">Students Performance in Bangladesh Dashboard</h1>
+  <div class="header">
+    <h1 class="head-title">Students Performance in Bangladesh Dashboard</h1>
+    <button id="darkToggle">
+      <i class="fas fa-moon"></i>
+    </button>
+  </div>
   <div class="card-container">
     <div class="cards">
       <div class="card">Total Students: <span id="total"></span></div>
@@ -64,44 +69,29 @@
     </div>
   </div>
  
-
-
-<div class="table-container">
-   <h2 class="section-title">Students Record</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Student ID</th>
-        <th>Gender</th>
-        <th>Age</th>
-        <th>District</th>
-        <th>School Type</th>
-        <th>Family Income</th>
-        <th>GPA Result</th>
-      </tr>
-    </thead>
-    <tbody id="student-table-body">
-    </tbody>
-  </table>
-  <div class="pagination">
-    <button id="prevBtn">Prev</button>
-      <div id="pageInfo"></div>
-    <button id="nextBtn">Next</button>
+  <div class="table-container">
+    <h2 class="section-title">Students Record</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Student ID</th>
+          <th>Gender</th>
+          <th>Age</th>
+          <th>District</th>
+          <th>School Type</th>
+          <th>Family Income</th>
+          <th>GPA Result</th>
+        </tr>
+      </thead>
+      <tbody id="student-table-body">
+      </tbody>
+    </table>
+    <div class="pagination">
+      <button id="prevBtn">Prev</button>
+        <div id="pageInfo"></div>
+      <button id="nextBtn">Next</button>
+    </div>
   </div>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<script src="app.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
