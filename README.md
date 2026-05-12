@@ -159,3 +159,30 @@ Comment out app.listen() and use:
 - Use Supabase anon key only
 
 ---
+
+# 🤖 AI-Powered Analytics
+
+This dashboard integrates Google's Gemini AI to provide intelligent insights and natural language interaction with student performance data.
+
+### AI Capabilities
+- Analyze student trends and academic patterns
+- Compare districts and school types
+- Detect high and low performers
+- Answer natural language questions
+- Generate data-driven insights from charts and raw data
+
+### Example Questions
+- "Which district has the highest GPA?"
+- "Compare private vs public school performance"
+- "Who are the top-performing students?"
+- "What is the relationship between study hours and GPA?"
+- "Which students have low attendance?"
+
+
+# 🔑 Additional Environment Variable
+
+Add your Gemini API key inside `.env`
+
+    GEMINI_API_KEY=your_gemini_api_key
+
+---
