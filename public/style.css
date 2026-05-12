@@ -15,10 +15,12 @@ body {
 }
 
 #chart1, #chart2, #chart3 {
-  padding: 10px;
-  margin-top: 10px;
-  display: none;
-  
+  padding:10px;
+}
+
+canvas {
+  width: 100% !important;
+  height: 600px !important;
 }
 
 .header-toggle{
@@ -44,14 +46,12 @@ body {
   cursor: pointer;
 }
 
-#chartSelector {
-  padding: 8px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  cursor: pointer;
-}
-
 .card-container{
+  /* center */
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: auto auto;
+  gap: 15px;
   background: white;
   padding: 20px;
   margin-bottom: 10px;
@@ -59,6 +59,21 @@ body {
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
   
 }
+
+/* First chart spans full row */
+.chart-box {
+  border-radius: 10px;
+  padding: 5px;
+}
+
+.full {
+  grid-column: 1 / -1;
+}
+
+.half {
+  width: 100%;
+}
+
 .cards {
   display: flex;
   gap: 10px;
@@ -298,7 +313,103 @@ body.dark .filter-row select:focus {
   transform: translateY(-1px);
 }
 
-/* Stat numbers glow */
+#chat-icon {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #4CAF50;
+  color: white;
+  font-size: 22px;
+  padding: 15px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  z-index: 1000;
+}
+
+/* CHAT BOX */
+#chat-box {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 300px;
+  height: 400px;
+  background: white;
+  border-radius: 12px;
+  display: none;
+  flex-direction: column;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  z-index: 1000;
+  overflow: hidden;
+}
+
+/* Header */
+.chat-header {
+  background: #2d7ef7;
+  color: white;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Messages */
+#chat-messages {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  font-size: 14px;
+}
+
+/* Message bubbles */
+.message {
+  margin: 5px 0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  max-width: 80%;
+}
+
+#close-chat{
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.user {
+  background: #2d7ef7;
+  color: white;
+  margin-left: auto;
+}
+
+.bot {
+  background: #eee;
+}
+
+/* Input */
+.chat-input {
+  display: flex;
+  border-top: 1px solid #ddd;
+}
+
+.chat-input input {
+  flex: 1;
+  border: none;
+  padding: 10px;
+  outline: none;
+}
+
+.chat-input button {
+  background: #2d7ef7;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+}
+
+/* DARK MODE SUPPORT */
+
 body.dark .stat-box h2 {
   color: #00ff88;
   text-shadow: 0 0 8px #00ff88;
@@ -323,15 +434,46 @@ body.dark #darkToggle:hover {
   color: black;
 }
 
-body.dark #chartSelector {
-  background: black;
+body.dark #chat-icon {
+  background: #000;
   color: #00ff88;
   border: 1px solid #00ff88;
+  box-shadow: 0 0 10px #00ff88;
+}
+
+body.dark #chat-box {
+  background: #000;
+  border: 1px solid #00ff88;
+  box-shadow: 0 0 10px #00ff88;
+}
+
+body.dark .chat-header {
+  background: #000;
+  color: #00ff88;
+  border-bottom: 1px solid #00ff88;
+}
+
+body.dark .bot {
+  background: #001a0f;
+  color: #00ff88;
+}
+
+body.dark .user {
+  background: #00ff88;
+  color: #000;
 }
 
 
-
 @media (max-width: 768px) {
+  .card-container {
+    grid-template-columns: 1fr;
+  }
+
+  .full,
+  .half {
+    grid-column: auto;
+  }
+
   .table-header {
     flex-direction: column;
     align-items: flex-start;
@@ -347,4 +489,6 @@ body.dark #chartSelector {
     flex: 1;
     min-width: 140px;
   }
+
+  
 }

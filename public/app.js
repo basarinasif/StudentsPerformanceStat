@@ -1,30 +1,34 @@
 let students = [];
 let currentPage = 1;
 let chart;
-let currentChartType = "gpa";
 let sortKey = null;
 let sortAsc = true;
 let filteredStudents = [];
 
 const rowsPerPage = 10;
 const toggleBtn = document.getElementById("darkToggle");
-const chartSelector = document.getElementById("chartSelector");
 
 // Load data from API and initialize dashboard
+function getTheme() {
+  const isDark = document.body.classList.contains("dark");
+
+  return {
+    isDark,
+    text: isDark ? "#00ff88" : "#000000",
+    grid: isDark ? "#333" : "#e0e0e0",
+    primary: isDark ? "#00ff88" : "#2d7ef7",
+    gray: isDark ? "#ccc":"#555"  
+  };
+}
 
 async function loadData() {
   const res = await fetch("/api/students");
   students = await res.json();
 
   
-  document.getElementById("total").innerText = students.length;
 
   const gpas = students.map(d => d.HSC_Result);
   const avg = (gpas.reduce((a, b) => a + b, 0) / gpas.length).toFixed(2);
-  const max = Math.max(...gpas);
-
-  document.getElementById("avg").innerText = avg;
-  document.getElementById("max").innerText = max;
 
   // =========================
   // METRICS
@@ -76,47 +80,16 @@ async function loadData() {
   document.getElementById("genderFilter").addEventListener("change", applyFilters);
   document.getElementById("schoolFilter").addEventListener("change", applyFilters);
 
-  showSelectedChart(currentChartType);
-  updateCards(currentChartType);
   renderTable();
   setupPagination();
+  renderChart();
+  renderLineChart();
+  renderPieChart();
+
+
 }
-
-// Chart rendering functions
-
-function showSelectedChart(type) {
-  // Hide all charts first
-  document.getElementById("chart1").style.display = "none";
-  document.getElementById("chart2").style.display = "none";
-  document.getElementById("chart3").style.display = "none";
-
-  if (type === "gpa") {
-    document.getElementById("chart1").style.display = "block";
-    renderChart();
-  } 
-  else if (type === "attendance") {
-    document.getElementById("chart2").style.display = "block";
-    renderLineChart();
-  } 
-  else if (type === "study") {
-    document.getElementById("chart3").style.display = "block";
-    renderPieChart();
-  }
-}
-
-// Chart type selector
-
-chartSelector.addEventListener("change", (e) => {
-  currentChartType = e.target.value;
-  showSelectedChart(currentChartType);
-  updateCards(currentChartType);
-  setTimeout(() => {
-  window.dispatchEvent(new Event('resize'));
-}, 50);
-});
 
 // Filter function
-
 function applyFilters() {
   const search = document.getElementById("searchInput").value.toLowerCase();
   const gender = document.getElementById("genderFilter").value;
@@ -137,176 +110,206 @@ function applyFilters() {
   renderTable();
 }
 
-// Update metric cards based on selected chart type
-
-function updateCards(type) {
-  const total = students.length;
-  let label1 = "Total Students", label2, label3, avglabel, maxlabel;
-
-  if (type === "gpa") {
-    const gpas = students.map(s => s.HSC_Result);
-    const avg = (gpas.reduce((a, b) => a + b, 0) / total).toFixed(2);
-    const max = Math.max(...gpas);
-
-    label2 = "Average GPA";
-    label3 = "Max GPA";
-    avglabel = avg;
-    maxlabel = max;
-    
-  }
-
-  else if (type === "attendance") {
-    const avgAttendance = (
-      students.reduce((a, b) => a + b.Attendance, 0) / total
-    ).toFixed(1);
-
-
-
-    const maxAttendance = Math.max(...students.map(s => s.Attendance));
-    
-
-    label2 = "Average Attendance";
-    label3 = "Max Attendance";
-    avglabel = avgAttendance + "%";
-    maxlabel = maxAttendance + "%";
-    
-  }
-
-  else if (type === "study") {
-    const avgStudy = (
-      students.reduce((a, b) => a + b.Study_Hours_per_Week, 0) / total
-    ).toFixed(1);
-
-    const maxStudy = Math.max(...students.map(s => s.Study_Hours_per_Week));
-    label2 = "Average Study Hours";
-    label3 = "Max Study Hours";
-    avglabel = avgStudy + " hrs";
-    maxlabel = maxStudy + " hrs";
-  }
-
-  document.querySelector(".label1").innerText = `${label1}: ${total}`;
-  document.querySelector(".label2").innerText = `${label2}: ${avglabel}`;
-  document.querySelector(".label3").innerText = `${label3}: ${maxlabel}`;
-
-}
-
 // GPA Chart
 function renderChart() {
-  const ctx = document.getElementById("chart1");
-  const isDark = document.body.classList.contains("dark");
+  const canvas = document.getElementById("chart1");
 
-  // Destroy old chart before creating new one
   if (chart) {
     chart.destroy();
+    chart = null;
   }
 
-  chart = new Chart(ctx, {
+  const theme = getTheme();
+
+  const districtMap = {};
+
+  students.forEach(s => {
+    const d = s.District;
+    if (!districtMap[d]) districtMap[d] = 0;
+    if (s.HSC_Result >= 4.0) districtMap[d]++;
+  });
+
+  const labels = Object.keys(districtMap);
+  const data = labels.map(d => districtMap[d]);
+
+  chart = new Chart(canvas, {
     type: "bar",
     data: {
-      labels: students.map(s => s.Student_ID),
+      labels,
       datasets: [{
-        label: "HSC Result",
-        data: students.map(s => s.HSC_Result),
-        fill: false,
-        borderColor: isDark ? "#00ff88" : "#2d7ef7",
-        backgroundColor: isDark ? "#00ff88" : "#2d7ef7",
-        pointBackgroundColor: isDark ? "#00ff88" : "#2d7ef7",
+        label: "High Performers (HSC ≥ 4.0)",
+        data,
+        backgroundColor: theme.primary
       }]
     },
     options: {
-      scales: {
-        x: {
-          ticks: { color: isDark ? "#00ff88" : "#000" },
-          grid: { display: isDark }
+      responsive: true,
+      animation: false, 
+
+      plugins: {
+        title: {
+          display: true,
+          text: "High Performing Students by District",
+          color: theme.text,
+          font: {
+            size: 18,
+            weight: "bold"
+          }
         },
-        y: {
-          ticks: { color: isDark ? "#00ff88" : "#000" },
-          grid: { display: isDark }
+        legend: {
+          labels: { color: theme.gray }
         }
       },
-      plugins: {
-        legend: {
-          labels: { color: isDark ? "#00ff88" : "#000" }
+      scales: {
+        x: {
+          ticks: { color: theme.text },
+          grid: { color: theme.grid }
+        },
+        y: {
+          beginAtZero: true,
+          ticks: { color: theme.text },
+          grid: { color: theme.grid }
         }
       }
     }
   });
 }
 
-// Attendance Chart
+// Study Chart
 let lineChart;
 
 function renderLineChart() {
   const ctx = document.getElementById("chart2").getContext("2d");
   const isDark = document.body.classList.contains("dark");
+  const theme = getTheme();
+  const ranges = {
+    "0-5 hrs": [],
+    "6-10 hrs": [],
+    "11-15 hrs": [],
+    "16-20 hrs": [],
+    "20+ hrs": []
+  };
+
+  students.forEach(s => {
+    const h = s.Study_Hours_per_Week;
+
+    if (h <= 5) ranges["0-5 hrs"].push(s.HSC_Result);
+    else if (h <= 10) ranges["6-10 hrs"].push(s.HSC_Result);
+    else if (h <= 15) ranges["11-15 hrs"].push(s.HSC_Result);
+    else if (h <= 20) ranges["16-20 hrs"].push(s.HSC_Result);
+    else ranges["20+ hrs"].push(s.HSC_Result);
+  });
+
+  const labels = Object.keys(ranges);
+
+  const data = labels.map(r => {
+    const arr = ranges[r];
+    if (arr.length === 0) return 0;
+    return Number(
+      (arr.reduce((a, b) => a + b, 0) / arr.length).toFixed(2)
+    );
+  });
 
   if (lineChart) lineChart.destroy();
 
   lineChart = new Chart(ctx, {
     type: "line",
     data: {
-      labels: students.map(s => s.Student_ID),
+      labels: labels,
       datasets: [{
-        label: "Attendance (%)",
-        data: students.map(s => s.Attendance),
-        fill: false,
-        borderColor: isDark ? "#00ff88" : "#2d7ef7",
-        backgroundColor: isDark ? "#00ff88" : "#2d7ef7",
-        pointBackgroundColor: isDark ? "#00ff88" : "#2d7ef7",
-        tension: 0.3
+        label: "Average HSC Result",
+        data: data,
+        borderColor: theme.primary,
+        backgroundColor: theme.primary,
+        tension: 0.4,
+        pointRadius: 5
       }]
     },
     options: {
       plugins: {
-        legend: {
-          labels: {
-            color: isDark ? "#00ff88" : "#000"
+        title: {
+          display: true,
+          text: "Study Hours vs Academic Performance",
+          color: theme.text,
+          font: {
+            size: 18,
+            weight: "bold"
           }
+        },
+        legend: {
+          labels: { color: theme.gray }
+        },
+        tooltip: {
+          enabled: true,
+          mode: "index",
+          intersect: false
         }
       },
       scales: {
         x: {
-          ticks: { color: isDark ? "#00ff88" : "#000" }
+          ticks: { color: theme.text },
+          grid: { color: theme.grid },
+          title: { color: theme.text }
         },
         y: {
-          ticks: { color: isDark ? "#00ff88" : "#000" }
+          ticks: { color: theme.text },
+          grid: { color: theme.grid },
+          title: { color: theme.text }
         }
       }
     }
   });
 }
 
-//Study Hours Chart
-
+//District Chart
 let pieChart;
 
 function renderPieChart() {
   const ctx = document.getElementById("chart3").getContext("2d");
   const isDark = document.body.classList.contains("dark");
-
+  const theme = getTheme();
   if (pieChart) pieChart.destroy();
 
-  const labels = students.map(s => s.Student_ID).slice(0, 10);
-  const data = students.map(s => s.Study_Hours_per_Week).slice(0, 10);
+  // 1. Group totals
+  const districtMap = {};
 
+  students.forEach(s => {
+    const d = s.District;
+
+    if (!districtMap[d]) {
+      districtMap[d] = {
+        total: 0,
+        sum: 0
+      };
+    }
+
+    districtMap[d].total += 1;
+    districtMap[d].sum += s.HSC_Result;
+  });
+
+  // 2. Compute average
+  const labels = Object.keys(districtMap);
+
+  const data = labels.map(d => {
+    const obj = districtMap[d];
+    return obj.sum / obj.total;
+  });
+
+  // 3. Better labels
+  const formattedLabels = labels.map((d, i) =>
+    `${d} (${data[i].toFixed(2)})`
+  );
+
+  // 4. Chart
   pieChart = new Chart(ctx, {
     type: "pie",
     data: {
-      labels,
+      labels: formattedLabels,
       datasets: [{
-        label: "Study Hours",
-        data,
+        data: data,
         backgroundColor: [
-          "#ff6384",
-          "#36a2eb",
-          "#ffcd56",
-          "#4bc0c0",
-          "#9966ff",
-          "#ff9f40",
-          "#00c49a",
-          "#e74c3c",
-          "#3498db",
-          "#9b59b6"
+          "#ff6384", "#36a2eb", "#ffcd56", "#4bc0c0",
+          "#9966ff", "#ff9f40", "#00c49a", "#e74c3c"
         ],
         borderColor: isDark ? "#000" : "#fff",
         borderWidth: 2
@@ -314,9 +317,18 @@ function renderPieChart() {
     },
     options: {
       plugins: {
+        title: {
+          display: true,
+          text: "Average HSC Result by District",
+          color: theme.text,
+          font: {
+            size: 18,
+            weight: "bold"
+          }
+        },
         legend: {
           labels: {
-            color: isDark ? "#00ff88" : "#000"
+            color: theme.gray
           }
         }
       }
@@ -325,7 +337,6 @@ function renderPieChart() {
 }
 
 // Table Rendering, Sorting, Pagination
-
 function renderTable() {
   const table = document.getElementById("student-table-body");
 
@@ -403,8 +414,200 @@ function setupPagination() {
   });
 }
 
-// Dark Mode Toggle
+// =========================
+// CHAT SYSTEM
+// =========================
+const chatIcon = document.getElementById("chat-icon");
+const chatBox = document.getElementById("chat-box");
+const closeChat = document.getElementById("close-chat");
+const sendBtn = document.getElementById("send-btn");
+const input = document.getElementById("chat-input");
+const messages = document.getElementById("chat-messages");
 
+// Open chat
+chatIcon.addEventListener("click", () => {
+  const isOpen = chatBox.style.display === "flex";
+  chatBox.style.display = isOpen ? "none" : "flex";
+});
+
+// Close chat
+closeChat.addEventListener("click", () => {
+  chatBox.style.display = "none";
+});
+
+// Send message
+sendBtn.addEventListener("click", sendMessage);
+input.addEventListener("keypress", e => {
+  if (e.key === "Enter") sendMessage();
+});
+
+async function sendMessage() {
+  const text = input.value.trim();
+  if (!text) return;
+
+  addMessage(text, "user");
+  input.value = "";
+
+  // SMART SHORTCUTS (no API call)
+  const lower = text.toLowerCase();
+
+  if (lower.includes("average gpa")) {
+    addMessage(document.getElementById("avgHSC").innerText, "bot");
+    return;
+  }
+
+  if (lower.includes("total students")) {
+    addMessage(document.getElementById("totalStudents").innerText, "bot");
+    return;
+  }
+
+  // typing indicator
+  const typing = addMessage("AI is typing...", "bot");
+
+  try {
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: text,
+        context: buildAIContext()
+      })
+    });
+
+    const data = await res.json();
+
+    typing.remove();
+    addMessage(data.reply, "bot");
+
+  } catch (err) {
+    typing.remove();
+    addMessage("Connection error.", "bot");
+  }
+}
+
+function addMessage(text, type) {
+  const div = document.createElement("div");
+  div.classList.add("message", type);
+  div.innerText = text;
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+  return div; // IMPORTANT
+}
+
+function buildAIContext() {
+  const avg = (arr, key) =>
+    (arr.reduce((a, b) => a + b[key], 0) / arr.length).toFixed(2);
+
+  // =========================
+  // BAR CHART (Chart 1)
+  // High performers per district
+  // =========================
+  const districtMap = {};
+
+  students.forEach(s => {
+    if (!districtMap[s.District]) {
+      districtMap[s.District] = { total: 0, high: 0, sum: 0 };
+    }
+
+    districtMap[s.District].total++;
+    districtMap[s.District].sum += s.HSC_Result;
+
+    if (s.HSC_Result >= 4) {
+      districtMap[s.District].high++;
+    }
+  });
+
+  const barChartData = Object.keys(districtMap).map(d => ({
+    district: d,
+    totalStudents: districtMap[d].total,
+    highPerformers: districtMap[d].high,
+    avgGPA: +(districtMap[d].sum / districtMap[d].total).toFixed(2)
+  }));
+
+  // =========================
+  // LINE CHART (Chart 2)
+  // Study hours vs GPA
+  // =========================
+  const studyBuckets = {
+    "0-5": [],
+    "6-10": [],
+    "11-15": [],
+    "16-20": [],
+    "20+": []
+  };
+
+  students.forEach(s => {
+    const h = s.Study_Hours_per_Week;
+
+    if (h <= 5) studyBuckets["0-5"].push(s.HSC_Result);
+    else if (h <= 10) studyBuckets["6-10"].push(s.HSC_Result);
+    else if (h <= 15) studyBuckets["11-15"].push(s.HSC_Result);
+    else if (h <= 20) studyBuckets["16-20"].push(s.HSC_Result);
+    else studyBuckets["20+"].push(s.HSC_Result);
+  });
+
+  const lineChartData = Object.keys(studyBuckets).map(k => ({
+    studyHours: k,
+    avgGPA: studyBuckets[k].length
+      ? +(studyBuckets[k].reduce((a, b) => a + b, 0) / studyBuckets[k].length).toFixed(2)
+      : 0
+  }));
+
+  // =========================
+  // PIE CHART (Chart 3)
+  // District GPA distribution
+  // =========================
+  const pieChartData = Object.keys(districtMap).map(d => ({
+    district: d,
+    avgGPA: +(districtMap[d].sum / districtMap[d].total).toFixed(2)
+  }));
+
+  // =========================
+  // FINAL CONTEXT OBJECT
+  // =========================
+  return {
+    summary: {
+      totalStudents: students.length,
+      avgGPA: avg(students, "HSC_Result"),
+      avgAttendance: avg(students, "Attendance"),
+      avgStudyHours: avg(students, "Study_Hours_per_Week")
+    },
+
+    stats: {
+      highPerformers: students.filter(s => s.HSC_Result >= 4).length,
+      privateSchoolPercent:
+        ((students.filter(s => s.School_Type === "Private").length / students.length) * 100).toFixed(1),
+      internetAccessPercent:
+        ((students.filter(s => s.Internet_Access === "Yes").length / students.length) * 100).toFixed(1)
+    },
+
+    income: {
+      avgBDT: (
+        students.reduce((a, b) => a + b.Family_Income_BDT, 0) /
+        students.length
+      ).toFixed(0)
+    },
+
+    charts: {
+      barChart: barChartData,
+      lineChart: lineChartData,
+      pieChart: pieChartData
+    }
+  };
+}
+
+// Auto open with greeting
+window.addEventListener("load", () => {
+  setTimeout(() => {
+    chatBox.style.display = "flex";
+    addMessage("Hey 👋 I'm your AI assistant. Ask me anything!", "bot");
+  }, 1200);
+});
+
+
+// Dark Mode Toggle
 if (localStorage.getItem("darkMode") === "enabled") {
   document.body.classList.add("dark");
 }
@@ -417,8 +620,10 @@ toggleBtn.addEventListener("click", () => {
   } else {
     localStorage.setItem("darkMode", "disabled");
   }
+  renderChart();
+  renderLineChart();
+  renderPieChart();
 
-  showSelectedChart(currentChartType);
 });
 
 loadData();

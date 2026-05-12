@@ -13,24 +13,20 @@
       <button id="darkToggle">
         <i class="fas fa-moon"></i>
       </button>
-      <select id="chartSelector">
-        <option value="gpa">GPA Chart</option>
-        <option value="attendance">Attendance Chart</option>
-        <option value="study">Study Hours Chart</option>
-      </select>
     </div>
      
   </div>
+
   <div class="card-container">
-    <div class="cards">
-      <div class="card label1">Total Students: <span id="total"></span></div>
-      <div class="card label2">Average GPA: <span id="avg"></span></div>
-      <div class="card label3">Max GPA: <span id="max"></span></div>
+    <div class="chart-box full">
+      <canvas id="chart1" ></canvas>
     </div>
-    
-    <canvas id="chart1" ></canvas>
-    <canvas id="chart2" ></canvas>
-    <canvas id="chart3" ></canvas>
+    <div class="chart-box half">
+      <canvas id="chart2" ></canvas>
+    </div>
+    <div class="chart-box half">
+      <canvas id="chart3" ></canvas>
+    </div>
   </div>
 
   <div class="bottom-dashboard">
@@ -124,6 +120,26 @@
       <button id="nextBtn">Next</button>
     </div>
   </div>
+    <!-- Chat Icon Button -->
+  <div id="chat-icon">
+    <i class="fas fa-comments"></i>
+  </div>
+
+  <!-- Chat Box -->
+  <div id="chat-box">
+    <div class="chat-header">
+      <span>AI Assistant</span>
+      <button id="close-chat"><i class="fas fa-times"></i></button>
+    </div>
+
+    <div id="chat-messages"></div>
+
+    <div class="chat-input">
+      <input type="text" id="chat-input" placeholder="Type a message..." />
+      <button id="send-btn"><i class="fas fa-paper-plane"></i></button>
+    </div>
+  </div>
+
   <script src="app.js"></script>
 </body>
 </html>
